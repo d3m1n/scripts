@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CHROMADB_VERSION="0.5.4"
+INITIAL_DIR=$(pwd)
 
 sudo apt update && sudo apt install python3-pip python3-venv -y
 sudo mkdir -p /var/www/chromadb /var/lib/chromadb /var/log/chromadb
@@ -27,3 +28,5 @@ LimitNOFILE=64000
 WantedBy=multi-user.target' | sudo tee /etc/systemd/system/chromadb.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now chromadb
+
+cd "$INITIAL_DIR"
