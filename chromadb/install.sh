@@ -25,3 +25,5 @@ LimitNOFILE=64000
 
 [Install]
 WantedBy=multi-user.target' | sudo tee /etc/systemd/system/chromadb.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now chromadb
