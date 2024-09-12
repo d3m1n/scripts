@@ -3,7 +3,9 @@
 CHROMADB_VERSION="0.5.4"
 INITIAL_DIR=$(pwd)
 
-sudo apt update && sudo apt install python3-pip python3-venv -y
+export DEBIAN_FRONTEND=noninteractive
+
+sudo -E apt update && sudo -E apt install python3-pip python3-venv -y
 sudo mkdir -p /var/www/chromadb /var/lib/chromadb /var/log/chromadb
 sudo chown $USER -R  /var/www/chromadb
 cd /var/www/chromadb
