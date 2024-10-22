@@ -11,8 +11,12 @@ then
     # Get size of the ephemeral disk and multiply it by the percent of space to allocate
     size=$(/bin/df -m --output=target,avail | /usr/bin/awk -v percent="$PCT" -v pattern=${LOCATION} '$0 ~ pattern {SIZE=int($2*percent);print SIZE}')
     echo "$size MB of space allocated to swap file"
-     # Create an empty file first and set correct permissions
-    /bin/dd if=/dev/zero of=${LOCATION}/swapfile bs=1M count=$size
+    # Create an empty file first and set correct permissions
+    /usr/bin/fallocate -l ${size}M ${LOCATION}/swapfile
+    # If fallocate fails, try dd instead
+    if [ $? -ne 0 ]; then
+        /bin/dd if=/dev/zero of=${LOCATION}/swapfile bs=1M count=$size
+    fi
     /bin/chmod 0600 ${LOCATION}/swapfile
     # Make the file available to use as swap
     /sbin/mkswap ${LOCATION}/swapfile
