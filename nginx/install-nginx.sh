@@ -60,6 +60,13 @@ if ! id -u www-data >/dev/null 2>&1; then
   ${SUDO} useradd --system --home-dir /var/www --create-home --shell /usr/sbin/nologin www-data
 fi
 
+echo "Ensuring /var/www exists with required permissions..."
+if [[ ! -d /var/www ]]; then
+  ${SUDO} mkdir -p /var/www
+fi
+${SUDO} chown www-data:www-data /var/www
+${SUDO} chmod 0755 /var/www
+
 if ${SUDO} grep -qE '^user[[:space:]]+' "${NGINX_CONF}"; then
   ${SUDO} sed -i -E 's/^user[[:space:]]+[^;]+;/user www-data;/' "${NGINX_CONF}"
 else
