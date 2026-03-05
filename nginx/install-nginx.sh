@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+export NEEDRESTART_SUSPEND=1
+
 EXPECTED_FPR="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
 KEYRING_PATH="/usr/share/keyrings/nginx-archive-keyring.gpg"
 REPO_LIST_PATH="/etc/apt/sources.list.d/nginx.list"
@@ -20,9 +24,11 @@ else
   SUDO="sudo"
 fi
 
+APT_ENV=(DEBIAN_FRONTEND="${DEBIAN_FRONTEND}" NEEDRESTART_MODE="${NEEDRESTART_MODE}" NEEDRESTART_SUSPEND="${NEEDRESTART_SUSPEND}")
+
 echo "Installing prerequisites..."
 ${SUDO} apt update
-${SUDO} apt install -y curl gnupg2 ca-certificates lsb-release ubuntu-keyring
+${SUDO} env "${APT_ENV[@]}" apt install -y curl gnupg2 ca-certificates lsb-release ubuntu-keyring
 
 echo "Importing nginx signing key..."
 curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor | ${SUDO} tee "${KEYRING_PATH}" >/dev/null
@@ -52,7 +58,7 @@ printf "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 9
 
 echo "Installing nginx..."
 ${SUDO} apt update
-${SUDO} apt install -y nginx
+${SUDO} env "${APT_ENV[@]}" apt install -y nginx
 
 echo "Configuring nginx worker user to www-data..."
 if ! id -u www-data >/dev/null 2>&1; then
